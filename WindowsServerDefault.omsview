@@ -1,0 +1,714 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "resourcegroup": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspace": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspaceapiversion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "[parameters('workspaceapiversion')]",
+            "name": "[parameters('workspace')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "location": "[parameters('location')]",
+            "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]",
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "WS2K16D",
+                    "type": "views",
+                    "location": "[parameters('location')]",
+                    "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'),'/views/WS2K16D')]",
+                    "dependson": [
+                        "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]"
+                    ],
+                    "properties": {
+                        "Id": "WS2K16D",
+                        "Name": "WS2K16D",
+                        "Author": "admin@poc4ryuk.onmicrosoft.com",
+                        "Source": "Local",
+                        "Version": 2,
+                        "Dashboard": [
+                            {
+                                "Id": "LineChartCalloutBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "TYPE Input",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "TYPE (count/1min)",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search *  | where TimeGenerated > ago(3d) | where Computer == \"WS2K16D\"  | summarize count() by Type, bin(TimeGenerated, 1m) | render timechart",
+                                        "Callout": {
+                                            "Title": "每小時平均值",
+                                            "Series": "",
+                                            "Operation": "Average"
+                                        },
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | summarize AggregatedValue = count() by Type",
+                                        "HideGraph": false,
+                                        "enableSparklines": true,
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數"
+                                        },
+                                        "Color": "#7fba00",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Processor",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "% Processor Time (Avg% / 1min)",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search *  | where Type == \"Perf\"  | where Computer == \"WS2K16D\"  | where ObjectName == \"Processor\"  | where CounterName == @\"% Processor Time\"  | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m)  | render timechart",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Processor\" | where CounterName == @\"% Processor Time\" | sort by TimeGenerated desc",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "CPU每分鐘平均使用率",
+                                            "Value": "計數%"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": true,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Memory",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "% Committed Byte In Use",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search  * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Memory\" | where CounterName == @\"% Committed Bytes In Use\" | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 1m)",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search  * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Memory\" | where CounterName == @\"Available MBytes\" | sort by TimeGenerated desc",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Available MBytes",
+                                            "Value": "計數(MB)"
+                                        },
+                                        "Color": "#00188f",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Logical Disk",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Free Megabytes(MB)",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"LogicalDisk\" | where CounterName == @\"Free Megabytes\" | where InstanceName != \"_Total\"  | summarize any(CounterValue) by InstanceName",
+                                        "CenterLegend": {
+                                            "Text": "總計",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#55d455",
+                                                "#7fba00",
+                                                "#009e49"
+                                            ],
+                                            "valueColorMapping": []
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"LogicalDisk\" | where CounterName == @\"% Free Space\" | where InstanceName != \"_Total\"  | summarize any(CounterValue) by InstanceName",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "% Free Space",
+                                            "Value": "計數%"
+                                        },
+                                        "Color": "#ffb900",
+                                        "thresholds": {
+                                            "isEnabled": true,
+                                            "values": [
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "預設",
+                                                    "color": "#ba141a",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "40",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "80",
+                                                    "color": "#009e49",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Logical Disk",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "Disk Transfers/sec",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"LogicalDisk\" | where CounterName == \"Disk Transfers/sec\" | where InstanceName != \"_Total\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 10s)",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Disk Reads/sec",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"LogicalDisk\" | where CounterName == \"Disk Reads/sec\" | where InstanceName != \"_Total\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 10s)",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Disk Writes/sec",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"LogicalDisk\" | where CounterName == \"Disk Writes/sec\" | where InstanceName != \"_Total\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 10s)",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Logical Disk",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "C:",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"LogicalDisk\" | where ( CounterName == \"Avg. Disk sec/Read\" or CounterName == \"Avg. Disk sec/Write\" )   | where InstanceName == \"C:\" | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 10s)",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "D:",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"LogicalDisk\" | where ( CounterName == \"Avg. Disk sec/Read\" or CounterName == \"Avg. Disk sec/Write\" )   | where InstanceName == \"D:\" | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 10s)",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "_Total",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"LogicalDisk\" | where ( CounterName == \"Avg. Disk sec/Read\" or CounterName == \"Avg. Disk sec/Write\" )   | where InstanceName == \"_Total\" | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 10s)",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Network Adapter",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Bytes Sent/sec",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Network Adapter\" | where CounterName == \"Bytes Sent/sec\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Network Adapter\" | where CounterName == \"Bytes Sent/sec\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc ",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Network Adapter",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Bytes Received/sec",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Network Adapter\" | where CounterName == @\"Bytes Received/sec\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc ",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Network Adapter\" | where CounterName == @\"Bytes Received/sec\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc ",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Network Interface",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Bytes Total/sec",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Network Interface\" | where CounterName == @\"Bytes Total/sec\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc ",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where Type == \"Perf\" | where Computer == \"WS2K16D\" | where ObjectName == \"Network Interface\" | where CounterName == @\"Bytes Total/sec\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc ",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "Filters": [],
+                        "OverviewTile": {
+                            "Id": "LineChartBuilderTile",
+                            "Type": "OverviewTile",
+                            "Version": 2,
+                            "Configuration": {
+                                "LineChart": {
+                                    "Query": "search * | where Type  == \"Heartbeat\" | where Computer == \"WS2K16D\" | summarize count() by Type, bin(TimeGenerated, 1m)  | render timechart",
+                                    "yAxis": {
+                                        "isLogarithmic": false,
+                                        "units": {
+                                            "baseUnitType": "",
+                                            "baseUnit": "",
+                                            "displayUnit": ""
+                                        },
+                                        "customLabel": ""
+                                    }
+                                },
+                                "Advanced": {
+                                    "DataFlowVerification": {
+                                        "Enabled": false,
+                                        "Query": "search * | limit 1 | project TimeGenerated",
+                                        "Message": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
