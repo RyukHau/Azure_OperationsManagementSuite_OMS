@@ -1,0 +1,645 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "resourcegroup": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspace": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspaceapiversion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "[parameters('workspaceapiversion')]",
+            "name": "[parameters('workspace')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "location": "[parameters('location')]",
+            "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]",
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "CentOSb74",
+                    "type": "views",
+                    "location": "[parameters('location')]",
+                    "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'),'/views/CentOSb74')]",
+                    "dependson": [
+                        "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]"
+                    ],
+                    "properties": {
+                        "Id": "CentOSb74",
+                        "Name": "CentOSb74",
+                        "Author": "admin@poc4ryuk.onmicrosoft.com",
+                        "Source": "Local",
+                        "Version": 2,
+                        "Dashboard": [
+                            {
+                                "Id": "LineChartCalloutBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Type Input",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Type(count/min)",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search * | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | summarize count() by Type, bin(TimeGenerated, 1m)  | render timechart",
+                                        "Callout": {
+                                            "Title": "每小時平均值",
+                                            "Series": "",
+                                            "Operation": "Average"
+                                        },
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | summarize AggregatedValue = count() by Type",
+                                        "HideGraph": false,
+                                        "enableSparklines": true,
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數"
+                                        },
+                                        "Color": "#7fba00",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Processor",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Used Processor",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search * | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Processor\" | where InstanceName == \"_Total\" | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 1m)",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where TimeGenerated > ago(10m) | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer == \"CentOS74\") | where ObjectName == \"Processor\" | where InstanceName == \"_Total\" | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc ",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": true,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Memory",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "Available MBytes Memory (MB)",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search  *  | where Type == \"Perf\"  | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Memory\"  | where CounterName == @\"Available MBytes Memory\"  | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "% Used Memory (%)",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search  *  | where Type == \"Perf\"  | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Memory\"  | where CounterName == @\"% Used Memory\"  | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "% Used Swap Space",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search  *  | where Type == \"Perf\"  | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Memory\"  | where CounterName == @\"% Used Swap Space\"  | summarize avg(CounterValue) by CounterName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Logical Disk",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Free Megabytes (MB)",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "search * | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Logical Disk\" | where CounterName == @\"Free Megabytes\" | where InstanceName != \"_Total\"  | summarize any(CounterValue) by InstanceName",
+                                        "CenterLegend": {
+                                            "Text": "總計",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#e2e584",
+                                                "#bad80a",
+                                                "#7fba00"
+                                            ],
+                                            "valueColorMapping": []
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Logical Disk\" | where CounterName == @\"Free Megabytes\" | where InstanceName != \"_Total\"  | summarize any(CounterValue) by InstanceName",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Type",
+                                            "Value": "計數 (MB)"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Logical Disk",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "% Used Space",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search * | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Logical Disk\" | where CounterName == @\"% Used Space\" | where InstanceName != \"_Total\"  | summarize any(CounterValue) by InstanceName",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Logical Disk\" | where CounterName == @\"% Used Space\" | where InstanceName != \"_Total\"  | summarize any(CounterValue) by InstanceName",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數 (%)"
+                                        },
+                                        "Color": "#6dc2e9",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartCalloutStackedBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "LOGICAL DISK",
+                                        "newGroup": false
+                                    },
+                                    "charts": [
+                                        {
+                                            "Header": {
+                                                "Title": "Disk Transfers/sec",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Logical Disk\" | where CounterName == @\"Disk Transfers/sec\" | where InstanceName != \"_Total\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 10s)",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Disk Reads/sec",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | where ObjectName == \"Logical Disk\" | where CounterName == @\"Disk Reads/sec\" | where InstanceName != \"_Total\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 10s)",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        },
+                                        {
+                                            "Header": {
+                                                "Title": "Disk Writes/sec",
+                                                "Subtitle": ""
+                                            },
+                                            "LineChart": {
+                                                "Query": "search * | where Type == \"Perf\" | where (Computer == \"centosb74\" or Computer  == \"CentOSb74\") | where ObjectName == \"Logical Disk\" | where CounterName == \"Disk Writes/sec\" | where InstanceName != \"_Total\"  | summarize any(CounterValue) by InstanceName",
+                                                "yAxis": {
+                                                    "isLogarithmic": false,
+                                                    "units": {
+                                                        "baseUnitType": "",
+                                                        "baseUnit": "",
+                                                        "displayUnit": ""
+                                                    },
+                                                    "customLabel": ""
+                                                },
+                                                "NavigationSelect": {}
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Network",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Total Bytes Received",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search *  | where Type == \"Perf\"  | where ( Computer == \"centosb74\" or Computer == \"CentOSb74\" )  | where ObjectName == \"Network\"   | where CounterName == @\"Total Bytes Received\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m)  | sort by TimeGenerated desc ",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search *  | where Type == \"Perf\"  | where ( Computer == \"centosb74\" or Computer == \"CentOSb74\" )  | where ObjectName == \"Network\"   | where CounterName == @\"Total Bytes Received\" | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m)  | sort by TimeGenerated desc ",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數"
+                                        },
+                                        "Color": "#00b294",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Network",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Total Bytes Transmitted",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "search * | where Type == \"Perf\" | where ( Computer == \"centosb74\" or Computer == \"CentOSb74\" ) | where ObjectName == \"Network\" | where ( CounterName == \"Total Bytes Transmitted\" ) | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc ",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "search * | where Type == \"Perf\" | where ( Computer == \"centosb74\" or Computer == \"CentOSb74\" ) | where ObjectName == \"Network\" | where ( CounterName == \"Total Bytes Transmitted\" ) | summarize avg(CounterValue) by InstanceName, bin(TimeGenerated, 1m) | sort by TimeGenerated desc ",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "類型",
+                                            "Value": "計數"
+                                        },
+                                        "Color": "#6dc2e9",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "一般",
+                                                    "threshold": "預設",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "警告",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "錯誤",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "Filters": [],
+                        "OverviewTile": {
+                            "Id": "LineChartBuilderTile",
+                            "Type": "OverviewTile",
+                            "Version": 2,
+                            "Configuration": {
+                                "LineChart": {
+                                    "Query": "search * | where Type == \"Heartbeat\" | where (Computer == \"centosb74\" or Computer == \"CentOSb74\") | summarize count() by Type, bin(TimeGenerated, 1m)  | render timechart",
+                                    "yAxis": {
+                                        "isLogarithmic": false,
+                                        "units": {
+                                            "baseUnitType": "",
+                                            "baseUnit": "",
+                                            "displayUnit": ""
+                                        },
+                                        "customLabel": ""
+                                    }
+                                },
+                                "Advanced": {
+                                    "DataFlowVerification": {
+                                        "Enabled": false,
+                                        "Query": "search * | limit 1 | project TimeGenerated",
+                                        "Message": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
